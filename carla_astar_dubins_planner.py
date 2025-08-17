@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-CARLA 0.9.15 | Python 3.8.10
+CARLA 0.9.15 | Python 3.7.9
 A* (centerline) + Dubins shortcut smoothing + simple path following
-
-更新要点（本版相对上一版的优化）
-- ✅ 更稳健：修复 A* 结点唯一性键在少数地图上可能退化的问题；
-- ✅ 更安全：Dubins 采样增加“横向偏移 + 车道类型”双重校验；
-- ✅ 更贴合仿真：参数调优（默认：A*步长3.0m、最小转弯半径9.0m、Dubins采样0.5m、目标判定半径5.0m）；
-- ✅ 更耐用：spawn 使用 try_spawn + 多次重试；所有 Actor/传感器在异常也能清理；
-- ✅ 更可控：行驶循环设置最大时长与末端缓行，防止无限循环或冲出终点；
-- ✅ 更直观：CSV 字段更全；打印运行摘要；截图相机自适应路径尺寸。
 
 功能:
 - 连接 CARLA, 清空 NPC, 仅生成自车(ego)
@@ -25,7 +17,7 @@ A* (centerline) + Dubins shortcut smoothing + simple path following
   python carla_astar_dubins_planner.py --host 127.0.0.1 --port 2000 --town Town03 
 
 注:
-  - 脚本不依赖 GlobalRoutePlanner/BehaviorAgent 等
+  - 不依赖 GlobalRoutePlanner/BehaviorAgent 等
   - Dubins 优先使用 `dubins` 库；若缺失，使用保守圆弧-直线-圆弧备选生成可行路径
 """
 
@@ -831,7 +823,7 @@ def take_topdown_screenshot(world: 'carla.World', path_xyz, out_png_path: str, f
         except Exception:
             pass
 
-### -------------------- 论文风格(白底+网格+障碍+路网+路径)渲染 -------------------- ###
+### -------------------- 路径规划图渲染 -------------------- ###
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -841,7 +833,7 @@ from matplotlib.ticker import MultipleLocator
 def render_paper_figure_from_csv(world: 'carla.World', csv_path: str, out_png_path: str,
                                  grid_res: float = 1.0, margin: float = 25.0,
                                  max_cells: int = 300000, info_text: str = None):
-    """生成论文风格的 2D 图：白底、网格、黑色障碍（非道路）、路网线、红色路径、绿点起点、蓝点终点。
+    """2D 图：白底、网格、黑色障碍（非道路）、路网线、红色路径、绿点起点、蓝点终点。
     - grid_res: 网格栅格间距(米)
     - margin: 在路径包围盒基础上扩张的边界(米)
     - max_cells: 网格最大像素数上限(防止极大范围导致卡顿)
